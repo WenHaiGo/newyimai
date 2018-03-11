@@ -1,17 +1,14 @@
 package com.easybuy.servlets;
 
 import java.io.IOException;
-import java.security.interfaces.RSAKey;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import com.easybuy.dbutil.PageUtil;
 import com.easybuy.model.EPCateg;
@@ -46,6 +43,45 @@ public class ProductServlet extends HttpServlet {
 		String param = request.getParameter("param");
 
 		EProductServiceImpl epService = new EProductServiceImpl();
+		if (param != null && param.equals("currentCateg")) {
+			System.out.println("========================");
+			// 获取子类的id
+			String cidStr = request.getParameter("cid");
+			// 如何判断一定是数字字符串？
+			int cid = Integer.parseInt(cidStr);
+			EProductServiceImpl esi = new EProductServiceImpl();
+			try {
+				List<EProduct> list = esi.getProductByCid(cid);
+				Gson gson = new Gson();
+				String pList = gson.toJson(list);
+				System.out.println("gdfhgrgregrlheigl" + pList);
+				response.getWriter().print(pList);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (param != null && param.equals("proview")) {
+			System.out.println("========================");
+			// 获取商品的id
+			String proIdStr = request.getParameter("proId");
+			System.out.println("sdsf"+proIdStr);
+			// 如何判断一定是数字字符串？
+			int proId = Integer.parseInt(proIdStr);
+			EProductServiceImpl esi = new EProductServiceImpl();
+			try {
+				EProduct e = esi.getProById(proId);
+				Gson gson = new Gson();
+				String pro = gson.toJson(e);
+				System.out.println("gdfhgrgregrlheigl" + pro);
+				response.getWriter().print(pro);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
 		if (param != null && param.equals("specialProduct")) {
 			// 这个参数真的不应该传入，既然变量名都是特卖的了为什么还要传入参数啊 传入参数和不传入参数会不会影响性能啊
 			List<EProduct> list = epService.getSpecialSaleProduct(1);
@@ -85,32 +121,6 @@ public class ProductServlet extends HttpServlet {
 			response.getWriter().write(productList);
 		}
 
-		if (param != null && param.equals("categ")) {
-			System.out.println("========================");
-			// 获取子类的id
-			String str = request.getParameter("EPCId");
-			// 如何判断一定是数字字符串？
-			int EPCId = Integer.parseInt(str);
-
-			// 默认是第一页
-			int pageNo = 1;
-
-			String pageNoStr = request.getParameter("pageNo");
-			PageUtil<EProduct> pageUtil = null;
-			if (pageNoStr != null) {
-				pageNo = Integer.parseInt(pageNoStr);
-				pageUtil = epService.getCategProduct(EPCId, pageNo, 8);
-			} else {
-				pageUtil = epService.getCategProduct(EPCId, pageNo, 8);
-			}
-
-			// 因为是从一个页面跳转到另外一个页面，而且需要上一页的数据 所以不通过ajax 而是通过jsp实现
-			request.setAttribute("pageUtil", pageUtil);
-			request.setAttribute("EPCId", EPCId);
-			request.getRequestDispatcher("product-list.jsp").forward(request, response);
-
-		}
-
 		if (param != null && param.equals("save")) {
 
 			save(request, response);
@@ -127,9 +137,9 @@ public class ProductServlet extends HttpServlet {
 		String stock = request.getParameter("stock");
 		String desc = request.getParameter("desc");
 		String isSpecialPriceStr = request.getParameter("isSpecial");
-		//利用三目运算获取是否特卖的int值
-		int isSpecialPrice = isSpecialPriceStr.equals("yes")?1:0;
-		
+		// 利用三目运算获取是否特卖的int值
+		int isSpecialPrice = isSpecialPriceStr.equals("yes") ? 1 : 0;
+
 		System.out.println(isSpecialPrice);
 		// 完成赋值
 		EProduct ep = new EProduct();

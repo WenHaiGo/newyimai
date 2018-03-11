@@ -591,16 +591,52 @@ public class EProductDaoImpl implements EProductDao {
 		pstm.setInt(2, e.getEPPrice());
 		pstm.setInt(3, e.getEPStock());
 		pstm.setInt(4, e.getEPCId());
-		pstm.setInt(5,e.getEPCChildId());
+		pstm.setInt(5, e.getEPCChildId());
 		pstm.setString(6, e.getEPFile());
 		pstm.setInt(7, e.getIsSpecialPrice());
 		pstm.setString(8, e.getEPDesc());
 		int a = pstm.executeUpdate();
-		if(a>0)
-		{
+		if (a > 0) {
 			isInsert = true;
 		}
 		return isInsert;
+	}
+
+	@Override
+	public List<EProduct> getProductByCid(int cid) throws SQLException {
+		// TODO Auto-generated method stub
+		String sql = "select * from e_product where epc_child_id = ?";
+		Connection conn = DBUtil.getConn();
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, cid);
+		List<EProduct> list = new ArrayList<>();
+		ResultSet rs = pstm.executeQuery();
+		while (rs.next()) {
+			EProduct ep = new EProduct();
+			ep = productAssign(ep, rs);
+			list.add(ep);
+		}
+		try {
+
+		} finally {
+			DBUtil.DBclose(conn, pstm, rs);
+		}
+		return list;
+	}
+
+	@Override
+	public EProduct getProById(int proId) throws SQLException {
+		// TODO Auto-generated method stub
+		String sql = "select * from e_product where ep_id = ? ";
+		Connection conn = DBUtil.getConn();
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, proId);
+		ResultSet rs = pstm.executeQuery();
+		EProduct e = new EProduct();
+		if (rs.next()) {
+			e = productAssign(e, rs);
+		}
+		return e;
 	}
 
 }

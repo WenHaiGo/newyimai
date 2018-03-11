@@ -96,8 +96,23 @@ public class EProductServiceImpl implements EProductService {
 	@Override
 	public boolean save(EProduct e) throws SQLException {
 		// TODO Auto-generated method stub
-		
+
 		return new EProductDaoImpl().save(e);
+	}
+
+	@Override
+	public List<EProduct> getProductByCid(int cid) throws SQLException {
+		// TODO Auto-generated method stub
+		EProductDaoImpl epdi = new EProductDaoImpl();
+		return epdi.getProductByCid(cid);
+	}
+
+	@Override
+	public EProduct getProById(int proId) throws SQLException {
+		// TODO Auto-generated method stub
+		EProductDaoImpl epdi = new EProductDaoImpl();
+
+		return epdi.getProById(proId);
 	}
 
 }

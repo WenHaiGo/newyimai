@@ -28,6 +28,8 @@ public interface EProductService {
 
 	Boolean deleCartProductByPid(int EPId);
 
+	//通过分类id获取所有商品
+	List<EProduct> getProductByCid(int cid) throws SQLException;
 	/**
 	 * 
 	 * @EUId 传入当前登录的用户名
@@ -41,4 +43,6 @@ public interface EProductService {
 
 	// 新增加商品
 	boolean save(EProduct e) throws SQLException;
+	//通过商品id得到商品
+	EProduct getProById(int proId) throws SQLException;
 }

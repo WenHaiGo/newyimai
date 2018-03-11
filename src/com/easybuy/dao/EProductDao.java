@@ -30,6 +30,9 @@ public interface EProductDao {
 	// 得到所有的商品
 	List<EProduct> getAllProduct() throws SQLException;
 
+	// 通过cid获取所有该类商品
+	List<EProduct> getProductByCid(int cid) throws SQLException;
+
 	/**
 	 * 
 	 * @EUId 传入当前登录的用户名
@@ -44,4 +47,5 @@ public interface EProductDao {
 	// 新添加商品
 	boolean save(EProduct e) throws SQLException;
 
+	EProduct getProById(int proId) throws SQLException;
 }
