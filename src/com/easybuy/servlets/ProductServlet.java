@@ -110,6 +110,10 @@ public class ProductServlet extends HttpServlet {
 			deleteById(request, response);
 		}
 
+		if (param != null && param.equals("getByProId")) {
+			getByProId(request, response);
+
+		}
 		/*
 		
 		
@@ -180,11 +184,38 @@ public class ProductServlet extends HttpServlet {
 
 	}
 
+	void getByProId(HttpServletRequest request, HttpServletResponse response) {
+		String proIdStr = request.getParameter("proId");
+		if (proIdStr != null) {
+			int proId = Integer.parseInt(proIdStr.trim());
+			EProductServiceImpl esi = new EProductServiceImpl();
+			try {
+				EProduct e = esi.getProById(proId);
+				Gson gson = new Gson();
+				String ep = gson.toJson(e);
+				PrintWriter out = response.getWriter();
+				System.out.println("saa" + ep);
+				out.print(ep);
+
+				// 释放资源：
+
+				out.close();
+				out = null;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+	}
+
 	void deleteById(HttpServletRequest request, HttpServletResponse response) {
 		EProductServiceImpl epi = new EProductServiceImpl();
-		
 		String proIdStr = request.getParameter("proId");
-		System.out.println("=========="+proIdStr);
+		System.out.println("==========" + proIdStr);
 		int proId = Integer.parseInt(proIdStr);
 		try {
 			boolean isDel = epi.delById(proId);
@@ -234,17 +265,15 @@ public class ProductServlet extends HttpServlet {
 		ep.setIsSpecialPrice(isSpecialPrice);
 		EProductServiceImpl esi = new EProductServiceImpl();
 		boolean isSave = false;
+		String proIdStr = request.getParameter("proId");
 		try {
-			if (ep.getEPId() == 0) {
+			if (proIdStr == null) {
 				isSave = esi.save(ep);
 			}
 
 			else {
-				String proIdStr = request.getParameter("proId").trim();
-				if (proIdStr != null) {
-					int proId = Integer.parseInt(proIdStr);
-					isSave = esi.updateProById(proId, ep);
-				}
+				int proId = Integer.parseInt(proIdStr);
+				isSave = esi.updateProById(proId, ep);
 			}
 
 			// 输出结果
