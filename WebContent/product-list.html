@@ -8,26 +8,63 @@
 <script type="text/javascript" src="scripts/function.js"></script>
 <script>
 	$(function() {
-		//获取页面传过来的cid
+		//加载左侧分类
+		loadCateg();
+		//加载首页
+		changePage(1);
+	})
+
+	function changePage(pageNo) {
+		//获取页面传过来的url
 		var url = window.location.href;
+		//分割出cid
 		var c = url.split("?")[1];
-		console.log(c);
 		var cid = c.split("=")[1];
-		//根据cid得到该类下的所有商品
 		$.ajax({
 			url : 'ProductServlet',
 			type : 'post',
 			data : {
 				param : 'currentCateg',
-				cid : cid
+				cid : cid,
+				pageNo : pageNo
 			},
 			dataType : 'json',
 			success : function(data) {
-				productViewAppend(cproduct,data);
+				/*
+				加载商品
+				 */
+				//避免上一页的数据  初始化商品展示
+				$("#cproduct").html("");
+				//加载该页面数据
+				loadProduct("#cproduct", data.list);
+				//刷新当前页数
+				$(".curPage").html(data.pageNo);
+				//为总页数赋值，其实有点重复因为总页数不变化
+				$(".total").html(data.totalPage);
 			}
 		})
-
-	})
+	}
+	//处理下一页
+	function nextPage() {
+		var next = parseInt($("#current").html()) + 1;
+		var total = parseInt($("#totalPage").html());
+		if (next > total) {
+			next = total;
+		}
+		else{
+			changePage(next);	
+		}
+	}
+	//处理上一页
+	function prePage() {
+		var pre = parseInt($("#current").html()) - 1;
+		if (pre < 1) {
+			pre = 1;
+		}
+		else{
+			changePage(pre);	
+		}
+	}
 </script>
 </head>
 <body>
@@ -79,57 +116,7 @@
 		<div class="lefter">
 			<div class="box">
 				<h2>商品分类</h2>
-				<dl>
-					<dt>图书音像</dt>
-					<dd>
-						<a href="product-list.html">图书</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">音乐</a>
-					</dd>
-					<dt>百货</dt>
-					<dd>
-						<a href="product-list.html">运动健康</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">服装</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">家居</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">美妆</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">母婴</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">食品</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">手机数码</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">家具首饰</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">手表饰品</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">鞋包</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">家电</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">电脑办公</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">玩具文具</a>
-					</dd>
-					<dd>
-						<a href="product-list.html">汽车用品</a>
-					</dd>
+				<dl id="classlist">
 				</dl>
 			</div>
 			<div class="spacer"></div>
@@ -160,13 +147,10 @@
 				<h2>全部商品</h2>
 				<div class="pager">
 					<ul class="clearfix">
-						<li><a href="#">上一页</a></li>
-						<li class="current">1</li>
-						<li><a href="#">2</a></li>
-						<li><a href="#">3</a></li>
-						<li><a href="#">4</a></li>
-						<li><a href="#">5</a></li>
-						<li><a href="#">下一页</a></li>
+						<li><a href="javascript:prePage()">上一页</a></li>
+						<li id="current" class="curPage">1</li>
+						<li><a href="javascript:nextPage()">下一页</a></li>
+						<li>总计<span class="total"></span>页
 					</ul>
 				</div>
 				<div class="clear"></div>
@@ -175,13 +159,10 @@
 				<div class="clear"></div>
 				<div class="pager">
 					<ul class="clearfix">
-						<li><a href="#">上一页</a></li>
-						<li class="current">1</li>
-						<li><a href="#">2</a></li>
-						<li><a href="#">3</a></li>
-						<li><a href="#">4</a></li>
-						<li><a href="#">5</a></li>
-						<li><a href="#">下一页</a></li>
+						<li><a href="javascript:prePage()">上一页</a></li>
+						<li id="current" class="curPage">1</li>
+						<li><a href="javascript:nextPage()">下一页</a></li>
+						<li>总计<span class="total" id="totalPage"></span>页
 					</ul>
 				</div>
 			</div>
