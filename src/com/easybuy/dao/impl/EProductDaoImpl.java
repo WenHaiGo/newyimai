@@ -648,20 +648,20 @@ public class EProductDaoImpl implements EProductDao {
 	@Override
 	public boolean updateProById(int proId, EProduct e) throws SQLException {
 		//
-		String sql = "update e_product set (ep_id,ep_name,ep_price,ep_stock,epc_id,"
-				+ "epc_child_id,ep_file_name,is_special_price,ep_description) VALUES (?,?,?,?,?,?,?,?,?)";
+		String sql = "update e_product set ep_name=?,ep_price=?,ep_stock=?,epc_id=?,"
+				+ "epc_child_id=?,ep_file_name=?,is_special_price=?,ep_description=?  where ep_id=?";
 		boolean isUpdate = false;
 		Connection conn = DBUtil.getConn();
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, proId);
-		pstm.setString(2, e.getEPName());
-		pstm.setInt(3, e.getEPPrice());
-		pstm.setInt(4, e.getEPStock());
-		pstm.setInt(5, e.getEPCId());
-		pstm.setInt(6, e.getEPCChildId());
-		pstm.setString(7, e.getEPFile());
-		pstm.setInt(8, e.getIsSpecialPrice());
-		pstm.setString(9, e.getEPDesc());
+		pstm.setString(1, e.getEPName());
+		pstm.setInt(2, e.getEPPrice());
+		pstm.setInt(3, e.getEPStock());
+		pstm.setInt(4, e.getEPCId());
+		pstm.setInt(5, e.getEPCChildId());
+		pstm.setString(6, e.getEPFile());
+		pstm.setInt(7, e.getIsSpecialPrice());
+		pstm.setString(8, e.getEPDesc());
+		pstm.setInt(9, proId);
 		int a = pstm.executeUpdate();
 		if (a > 0) {
 			isUpdate = true;

@@ -49,8 +49,8 @@ public class NewCategServlet extends HttpServlet {
 		if (param != null && param.equals("allParent")) {
 			getAllParent(request, response);
 		}
-		if (param != null && param.equals("update")) {
-			updateByCid(request, response);
+		if (param != null && param.equals("save")) {
+			save(request, response);
 		}
 		// 通过大类id获取所有子类
 		if (param != null && param.equals("getByPid")) {
@@ -59,6 +59,7 @@ public class NewCategServlet extends HttpServlet {
 		if (param != null && param.equals("delete")) {
 			delCategByPid(request, response);
 		}
+		
 	}
 
 	void delCategByPid(HttpServletRequest request, HttpServletResponse response) {
@@ -108,7 +109,7 @@ public class NewCategServlet extends HttpServlet {
 
 	}
 
-	void updateByCid(HttpServletRequest request, HttpServletResponse response) {
+	void save(HttpServletRequest request, HttpServletResponse response) {
 		String pidStr = request.getParameter("pid");
 		String cname = request.getParameter("cname");
 		String cidStr = request.getParameter("cid");
@@ -136,6 +137,10 @@ public class NewCategServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		//cid为空就是新添加操作
+		else {
+			
 		}
 	}
 

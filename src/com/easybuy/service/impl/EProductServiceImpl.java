@@ -135,7 +135,7 @@ public class EProductServiceImpl implements EProductService {
 	public boolean updateProById(int proId,EProduct e) throws SQLException {
 		// TODO Auto-generated method stub
 		EProductDaoImpl epi = new EProductDaoImpl();
-		return false;
+		return epi.updateProById(proId, e);
 	}
 
 	@Override

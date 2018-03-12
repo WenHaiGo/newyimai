@@ -46,7 +46,6 @@ public class UserServlet extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=utf-8");
 		System.err.println("进入了user色rvlet");
-
 		String param = request.getParameter("param");
 		if (param != null && param.equals("reg")) {
 			// TODO Auto-generated method stub

@@ -8,40 +8,14 @@
 <script type="text/javascript" src="scripts/function.js"></script>
 <script>
 	$(function() {
-		//加载左侧分类
-		$.ajax({
-			url : 'CategServlet',
-			type : 'post',
-			data : {
-				param : 'allCateg',
-			},
-			dataType : 'json',
-			success : function(data) {
-				//加载大类
-				for (var i = 0; i < data.length; i++) {
-					var pstr = '<dt>' + data[i].name + '</dt>';
-					$("#classlist").append(pstr);
-
-					//加载子类
-					var temp = data[i].list;
-					for (var j = 0; j < temp.length; j++) {
-						var cstr = '<dd>';
-						cstr += '<a href="product-list.html?cid='+temp[j].EPCId+'">' + temp[j].EPCName
-								+ '</a>';
-						cstr += '</dd>';
-						$("#classlist").append(cstr);
-					}
-				}
-			}
-		})
-
+		loadCateg();
 	})
 </script>
 </head>
 <body>
 	<div id="header" class="wrap">
 		<div id="logo">
-			<img src="images/logo.gif" />
+			<a href="index.html"><img src="images/logo.gif" /></a>
 		</div>
 		<div class="help">
 			<a href="#" class="shopping">购物车</a><a href="login.html">登录</a><a
@@ -390,7 +364,9 @@
 		</div>
 		<div class="clear"></div>
 	</div>
-	<div id="footer">Copyright &copy; 2010 北大青鸟 All Rights Reserved.
-		京ICP证1000001号</div>
+	<div id="footer">
+		<a style="" href="manage/index.html">后台管理</a> Copyright &copy;
+		2010 北大青鸟 All Rights Reserved. 京ICP证1000001号
+	</div>
 </body>
 </html>

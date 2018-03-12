@@ -22,12 +22,15 @@
 			type : 'post',
 			data : {
 				param : 'proview',
-				proId : 4
+				proId : proId
 			},
 			dataType : 'json',
 			success : function(data) {
 				$(".price").html(data.EPPrice);
 				$("#stock").html(data.EPStock);
+				$("#pname").html(data.EPName);
+				$(".text").html(data.EPDesc);
+				$("img[name=pimg]").attr("src", data.EPFile)
 			}
 		})
 
@@ -37,7 +40,7 @@
 <body>
 	<div id="header" class="wrap">
 		<div id="logo">
-			<img src="images/logo.gif" />
+			<a href="index.html"><img src="images/logo.gif" /></a>
 		</div>
 		<div class="help">
 			<a href="#" class="shopping">购物车</a><a href="login.html">登录</a><a
@@ -88,16 +91,18 @@
 			</div>
 		</div>
 		<div id="product" class="main">
-			<h1>铁三角 Audio-Technica ATH-EQ300M-SV 银色 挂耳式耳机</h1>
+			<h1 id=pname></h1>
 			<div class="infos">
 				<div class="thumb">
-					<img src="images/product/0.jpg" />
+					<img name="pimg"/>
 				</div>
 				<div class="buy">
 					<p>
-						商城价：<span class="price">￥99.00</span>
+						商城价：<span class="price"></span>
 					</p>
-					<p>库 存：<span id="stock"></span></p>
+					<p>
+						库 存：<span id="stock"></span>
+					</p>
 					<div class="button">
 						<input type="button" name="button" value="" onclick="goBuy(1)" /><a
 							href="#">放入购物车</a>
@@ -107,11 +112,9 @@
 			</div>
 			<div class="introduce">
 				<h2>
-					<strong>商品详情</strong>
+					<strong id="detail">商品详情</strong>
 				</h2>
-				<div class="text">
-					sdf<br /> sdf<br />
-				</div>
+				<div class="text"></div>
 			</div>
 		</div>
 		<div class="clear"></div>

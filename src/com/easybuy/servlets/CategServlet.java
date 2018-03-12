@@ -40,7 +40,7 @@ public class CategServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		request.setCharacterEncoding("utf-8");
 		String param = request.getParameter("param");
-		if (param != null && param.equals("manageCateg")) {
+		if (param != null && param.equals("allCateg")) {
 			showAllCateg(request, response);
 		}
 
@@ -58,21 +58,7 @@ public class CategServlet extends HttpServlet {
 		}
 		// 需要在添加商品页面展示出所有分类
 		if (param != null && param.equals("categ")) {
-			CategServiceImpl csi = new CategServiceImpl();
-			try {
-				List<CategUtils> list = csi.getCategoryOfTree();
-				/*
-				 * 把分类树转换为json对象
-				 */
-				Gson gson = new Gson();
-				String categTree = gson.toJson(list);
-				response.setContentType("text/html; charset=utf-8"); 
-				response.getWriter().write(categTree);
 
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 
 	}
@@ -153,14 +139,17 @@ public class CategServlet extends HttpServlet {
 	private void showAllCateg(HttpServletRequest request, HttpServletResponse response) {
 		CategServiceImpl csi = new CategServiceImpl();
 		try {
-			List<CategUtils> CUList = csi.getCategoryOfTree();
-			// 把工具类发给页面
-			request.setAttribute("CUList", CUList);
-			request.getRequestDispatcher("manageProductCateg.jsp").forward(request, response);
+			List<CategUtils> list = csi.getCategoryOfTree();
+			/*
+			 * 把分类树转换为json对象
+			 */
+			Gson gson = new Gson();
+			String categTree = gson.toJson(list);
+			System.out.println("dssssssssssss"+categTree);
+			response.setContentType("text/html; charset=utf-8");
+			response.getWriter().write(categTree);
+
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServletException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -1,6 +1,7 @@
 package com.easybuy.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,6 +15,7 @@ import org.apache.jasper.tagplugins.jstl.core.If;
 
 import com.easybuy.model.EUser;
 import com.easybuy.service.impl.EUServiceImpl;
+import com.google.gson.Gson;
 
 import net.sf.json.JSONObject;
 
@@ -36,19 +38,24 @@ public class ManageUserServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		System.out.println("进入manageuserservlet");
 		// TODO Auto-generated method stub
 		response.setContentType("text/html;charset=utf-8");
-
 		String param = request.getParameter("param");
-
 		if (param != null && param.equals("manageLogin")) {
 			login(request, response);
 		}
-		if (param != null && param.equals("showAllUser")) {
-			showAllUser(request, response);
+		if (param != null && param.equals("allUser")) {
+			try {
+				showAllUser(request, response);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -56,8 +63,15 @@ public class ManageUserServlet extends HttpServlet {
 			throws ServletException, IOException {
 		EUServiceImpl eus = new EUServiceImpl();
 		List<EUser> allUser = eus.showAllUser();
-		request.setAttribute("allUser", allUser);
-		request.getRequestDispatcher("manageUser.jsp").forward(request, response);
+		Gson gson = new Gson();
+		String userList = gson.toJson(allUser);
+		System.out.println(userList);
+		PrintWriter out = response.getWriter();
+		out.print(userList);
+
+		out.flush();
+		out.close();
+		out = null;
 
 	}
 
@@ -65,7 +79,6 @@ public class ManageUserServlet extends HttpServlet {
 		EUServiceImpl eus = new EUServiceImpl();
 		String EUId = request.getParameter("EUId");
 		String EUPwd = request.getParameter("EUPwd");
-		System.out.println("第三方个非官方个去哪的分多少来得及" + EUId);
 
 		boolean isExist = eus.checkEUId(EUId, EUPwd);
 		JSONObject json = new JSONObject();
