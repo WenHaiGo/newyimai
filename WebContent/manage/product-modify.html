@@ -21,6 +21,8 @@
 		var p = url.split("?")[1];
 		var pp = p.split("&")[0];
 		var proId = pp.split("=")[1];
+		//将商品id赋值给一个隐藏标签  提交时候一起提交便于修改
+		$("input[name=proId]").val(proId);
 		console.log("pro" + proId);
 		//分割小类id
 		var c = url.split("&")[1];
@@ -94,6 +96,25 @@
 					})
 				})
 
+		//加载之前的商品信息：
+		$.ajax({
+			url : '../ProductServlet',
+			type : 'post',
+			data : {
+				param : 'getByProId',
+				proId : proId
+			},
+			dataType : 'json',
+			success : function(data) {
+				console.log(data.isSpecialPrice+"saaaaaaaaa");
+				$("input[name=productName]").val(data.EPName);
+				$("input[name=productPrice]").val(data.EPPrice);
+				$("input[name=stock]").val(data.EPStock);
+				$("input[name=desc]").val(data.EPDesc);
+				$("input[name='isSpecial'][value=" + data.isSpecialPrice + "]")
+						.attr('checked', 'true');
+			}
+		})
 	})
 </script>
 </head>
@@ -157,6 +178,7 @@
 			<h2>修改商品</h2>
 			<div class="manage">
 				<form action="../ProductServlet?param=save" method="post">
+					<input hidden="hidden" name="proId">
 					<table class="form">
 						<tr>
 							<td class="field">商品名称：</td>
@@ -189,8 +211,8 @@
 						<tr>
 							<td class="field">是否特卖 ：</td>
 							<td><input type="radio" class="text tiny" name="isSpecial"
-								value="yes" />是<input type="radio" class="text tiny"
-								name="isSpecial" value="no" />否</td>
+								value="1" />是<input type="radio" class="text tiny"
+								name="isSpecial" value="0" />否</td>
 						</tr>
 						<tr>
 							<td></td>
