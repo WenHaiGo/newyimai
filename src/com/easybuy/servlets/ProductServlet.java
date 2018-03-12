@@ -1,6 +1,7 @@
 package com.easybuy.servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jasper.tagplugins.jstl.core.Out;
 
 import com.easybuy.dbutil.PageUtil;
 import com.easybuy.model.EPCateg;
@@ -41,31 +44,85 @@ public class ProductServlet extends HttpServlet {
 		response.setContentType("text/html;charset=utf-8");
 		request.setCharacterEncoding("utf-8");
 		String param = request.getParameter("param");
-
 		EProductServiceImpl epService = new EProductServiceImpl();
-		if (param != null && param.equals("currentCateg")) {
-			System.out.println("========================");
-			// 获取子类的id
-			String cidStr = request.getParameter("cid");
-			// 如何判断一定是数字字符串？
-			int cid = Integer.parseInt(cidStr);
+		// 加载所有商品
+		if (param != null && param.equals("allPro")) {
 			EProductServiceImpl esi = new EProductServiceImpl();
 			try {
-				List<EProduct> list = esi.getProductByCid(cid);
+				List<EProduct> list = esi.getAllProduct();
 				Gson gson = new Gson();
-				String pList = gson.toJson(list);
-				System.out.println("gdfhgrgregrlheigl" + pList);
-				response.getWriter().print(pList);
+				String proList = gson.toJson(list);
+				System.out.println(proList);
+				PrintWriter out = response.getWriter();
+				out.print(proList);
+				// 释放资源
+				out.flush();
+				out.close();
+				out = null;
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		// 分类下的商品分页展示
+		if (param != null && param.equals("currentCateg")) {
+
+			System.out.println("========================");
+			// 获取子类的id
+			String cidStr = request.getParameter("cid");
+			// 如何判断一定是数字字符串？
+			int cid = Integer.parseInt(cidStr);
+
+			int pageNo = 1;
+
+			String pageNoStr = request.getParameter("pageNo");
+			PageUtil<EProduct> pageUtil = null;
+			System.out.println(pageNoStr);
+			if (pageNoStr != null) {
+				pageNo = Integer.parseInt(pageNoStr);
+				pageUtil = epService.getCategProduct(cid, pageNo, 8);
+			} else {
+				pageUtil = epService.getCategProduct(cid, pageNo, 8);
+			}
+
+			EProductServiceImpl esi = new EProductServiceImpl();
+			try {
+				pageUtil = esi.getProductByCid(cid, pageNo, 8);
+				Gson gson = new Gson();
+				String pageUtilJ = gson.toJson(pageUtil);
+				System.out.println("gdfhgrgregrlheigl" + pageUtilJ);
+				response.getWriter().print(pageUtilJ);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		// 添加商品和修改商品
+		if (param != null && param.equals("save")) {
+
+			save(request, response);
+
+		}
+
+		if (param != null && param.equals("delete")) {
+			deleteById(request, response);
+		}
+
+		/*
+		
+		
+		
+		
+		
+		
+		*/
 		if (param != null && param.equals("proview")) {
 			System.out.println("========================");
 			// 获取商品的id
 			String proIdStr = request.getParameter("proId");
-			System.out.println("sdsf"+proIdStr);
+			System.out.println("sdsf" + proIdStr);
 			// 如何判断一定是数字字符串？
 			int proId = Integer.parseInt(proIdStr);
 			EProductServiceImpl esi = new EProductServiceImpl();
@@ -121,26 +178,49 @@ public class ProductServlet extends HttpServlet {
 			response.getWriter().write(productList);
 		}
 
-		if (param != null && param.equals("save")) {
+	}
 
-			save(request, response);
+	void deleteById(HttpServletRequest request, HttpServletResponse response) {
+		EProductServiceImpl epi = new EProductServiceImpl();
+		
+		String proIdStr = request.getParameter("proId");
+		System.out.println("=========="+proIdStr);
+		int proId = Integer.parseInt(proIdStr);
+		try {
+			boolean isDel = epi.delById(proId);
+			PrintWriter out = response.getWriter();
+			if (isDel) {
+				out.print("yes");
 
+			} else {
+				out.print("no");
+			}
+
+			out.flush();
+			out.close();
+			out = null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
 
 	void save(HttpServletRequest request, HttpServletResponse response) {
-		String name = request.getParameter("productName");
-		String pclass = request.getParameter("parentClass");
-		String cclass = request.getParameter("childClass");
-		String file = request.getParameter("photo");
-		String price = request.getParameter("productPrice");
-		String stock = request.getParameter("stock");
-		String desc = request.getParameter("desc");
-		String isSpecialPriceStr = request.getParameter("isSpecial");
+		String name = request.getParameter("productName").trim();
+		String pclass = request.getParameter("parentClass").trim();
+		String cclass = request.getParameter("childClass").trim();
+		String file = request.getParameter("photo").trim();
+		String price = request.getParameter("productPrice").trim();
+		String stock = request.getParameter("stock").trim();
+		String desc = request.getParameter("desc").trim();
+		String isSpecialPriceStr = request.getParameter("isSpecial").trim();
 		// 利用三目运算获取是否特卖的int值
 		int isSpecialPrice = isSpecialPriceStr.equals("yes") ? 1 : 0;
 
-		System.out.println(isSpecialPrice);
 		// 完成赋值
 		EProduct ep = new EProduct();
 		ep.setEPCChildId(Integer.parseInt(cclass));
@@ -155,14 +235,29 @@ public class ProductServlet extends HttpServlet {
 		EProductServiceImpl esi = new EProductServiceImpl();
 		boolean isSave = false;
 		try {
-			isSave = esi.save(ep);
+			if (ep.getEPId() == 0) {
+				isSave = esi.save(ep);
+			}
 
+			else {
+				String proIdStr = request.getParameter("proId").trim();
+				if (proIdStr != null) {
+					int proId = Integer.parseInt(proIdStr);
+					isSave = esi.updateProById(proId, ep);
+				}
+			}
+
+			// 输出结果
 			if (isSave) {
-				System.out.println("ok");
+				response.sendRedirect("manage/manage-result.html");
 			} else {
-				System.out.println("no");
+				System.out.println("wrong");
+
 			}
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

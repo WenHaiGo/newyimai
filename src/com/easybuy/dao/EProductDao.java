@@ -46,6 +46,10 @@ public interface EProductDao {
 
 	// 新添加商品
 	boolean save(EProduct e) throws SQLException;
-
+	boolean updateProById(int proId,EProduct e) throws SQLException;
 	EProduct getProById(int proId) throws SQLException;
+
+	//通过商品id删除商品
+	boolean delById(int proId)throws SQLException;
+
 }

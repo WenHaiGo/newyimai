@@ -636,7 +636,61 @@ public class EProductDaoImpl implements EProductDao {
 		if (rs.next()) {
 			e = productAssign(e, rs);
 		}
+		try {
+
+		} finally {
+			DBUtil.DBclose(conn, pstm, rs);
+
+		}
 		return e;
+	}
+
+	@Override
+	public boolean updateProById(int proId, EProduct e) throws SQLException {
+		//
+		String sql = "update e_product set (ep_id,ep_name,ep_price,ep_stock,epc_id,"
+				+ "epc_child_id,ep_file_name,is_special_price,ep_description) VALUES (?,?,?,?,?,?,?,?,?)";
+		boolean isUpdate = false;
+		Connection conn = DBUtil.getConn();
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, proId);
+		pstm.setString(2, e.getEPName());
+		pstm.setInt(3, e.getEPPrice());
+		pstm.setInt(4, e.getEPStock());
+		pstm.setInt(5, e.getEPCId());
+		pstm.setInt(6, e.getEPCChildId());
+		pstm.setString(7, e.getEPFile());
+		pstm.setInt(8, e.getIsSpecialPrice());
+		pstm.setString(9, e.getEPDesc());
+		int a = pstm.executeUpdate();
+		if (a > 0) {
+			isUpdate = true;
+		}
+
+		try {
+
+		} finally {
+			DBUtil.DBclose(conn, pstm);
+
+		}
+		return isUpdate;
+	}
+
+	@Override
+	public boolean delById(int proId) throws SQLException {
+		// TODO Auto-generated method stub
+		String sql = "delete from e_product where ep_id=?";
+		Connection conn = DBUtil.getConn();
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1,proId );
+		int temp = pstm.executeUpdate();
+		try {
+
+		} finally {
+			DBUtil.DBclose(conn, pstm);
+
+		}
+		return temp > 0 ? true : false;
 	}
 
 }

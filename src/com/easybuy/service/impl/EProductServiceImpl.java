@@ -100,11 +100,27 @@ public class EProductServiceImpl implements EProductService {
 		return new EProductDaoImpl().save(e);
 	}
 
+	
+	
+	
+	//处理分类展示下的分页
 	@Override
-	public List<EProduct> getProductByCid(int cid) throws SQLException {
+	public PageUtil<EProduct> getProductByCid(int cid,int pageNo,int pageSize) throws SQLException {
 		// TODO Auto-generated method stub
-		EProductDaoImpl epdi = new EProductDaoImpl();
-		return epdi.getProductByCid(cid);
+		PageUtil<EProduct> pageUtil = new PageUtil<>();
+
+		EProductDaoImpl epDao = new EProductDaoImpl();
+		// 为了获取总页数 需要先获取总的条数还需要在dao里面把这个搞定
+
+		int totalNumData = epDao.getProductNumByCategId(cid);
+		// 这里不要使用math.ceil这个方法，这个方法处理分数会出错。
+		int totalPages = totalNumData % pageSize == 0 ? totalNumData / pageSize : totalNumData / pageSize + 1;
+
+		pageUtil.setList(epDao.getCategProduct(cid, pageNo, pageSize));
+		pageUtil.setPageNo(pageNo);
+		pageUtil.setPageSize(pageSize);
+		pageUtil.setTotalPage(totalPages);
+		return pageUtil;
 	}
 
 	@Override
@@ -113,6 +129,21 @@ public class EProductServiceImpl implements EProductService {
 		EProductDaoImpl epdi = new EProductDaoImpl();
 
 		return epdi.getProById(proId);
+	}
+
+	@Override
+	public boolean updateProById(int proId,EProduct e) throws SQLException {
+		// TODO Auto-generated method stub
+		EProductDaoImpl epi = new EProductDaoImpl();
+		return false;
+	}
+
+	@Override
+	public boolean delById(int proId)throws SQLException {
+		// TODO Auto-generated method stub
+		EProductDaoImpl epi = new EProductDaoImpl();
+		
+		return epi.delById(proId);
 	}
 
 }
