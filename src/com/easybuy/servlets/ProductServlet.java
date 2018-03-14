@@ -3,6 +3,7 @@ package com.easybuy.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.jasper.tagplugins.jstl.core.Out;
 
@@ -114,6 +116,42 @@ public class ProductServlet extends HttpServlet {
 			getByProId(request, response);
 
 		}
+		if (param != null && param.equals("specialProduct")) {
+			// 这个参数真的不应该传入，既然变量名都是特卖的了为什么还要传入参数啊 传入参数和不传入参数会不会影响性能啊
+			List<EProduct> list = epService.getSpecialSaleProduct(1);
+			// 将list转换为json来一波
+			Gson gson = new Gson();
+			String productList = gson.toJson(list);
+			response.getWriter().write(productList);
+		}
+
+		if (param != null && param.equals("saveCart")) {
+			HttpSession session = request.getSession();
+			// 获取商品id
+			String proIdStr = request.getParameter("proId");
+			int proId = Integer.parseInt(proIdStr);
+			System.out.println("==============="+proId);
+			// 先去查看session是否有已经存在的session cartlist
+			if (session.getAttribute("cart") != null) {
+				//将商品list取出来
+				@SuppressWarnings("unchecked")
+				List<Integer> list = (List<Integer>) session.getAttribute("cart");
+				list.add(proId);
+				//将商品list重新放到session里面
+				session.setAttribute("cart", list);
+			}
+			// 如果没有就去创建购物车session
+			else {
+				// 创建放购车商品的list
+				List<Integer> list = new ArrayList<>();
+				// 给list里面添加商品
+				list.add(proId);
+				// 将该list放到session里面
+				session.setAttribute("cart", list);
+			}
+			
+			System.out.println(((List<Integer>)session.getAttribute("cart")).size());
+		}
 		/*
 		
 		
@@ -141,15 +179,6 @@ public class ProductServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
-		}
-
-		if (param != null && param.equals("specialProduct")) {
-			// 这个参数真的不应该传入，既然变量名都是特卖的了为什么还要传入参数啊 传入参数和不传入参数会不会影响性能啊
-			List<EProduct> list = epService.getSpecialSaleProduct(1);
-			// 将list转换为json来一波
-			Gson gson = new Gson();
-			String productList = gson.toJson(list);
-			response.getWriter().write(productList);
 		}
 
 		if (param != null && param.equals("productView")) {

@@ -30,11 +30,30 @@
 				$("#stock").html(data.EPStock);
 				$("#pname").html(data.EPName);
 				$(".text").html(data.EPDesc);
-				$("img[name=pimg]").attr("src", data.EPFile)
+				$("img[name=pimg]").attr("src", data.EPFile);
+				$("input[name=proId]").val(data.EPId);
 			}
 		})
 
 	})
+	
+	
+	function cart(){
+		var proId=$("input[name=proId]").val();
+		alert(proId);
+		$.ajax({
+			url : 'ProductServlet',
+			type : 'post',
+			data : {
+				param : 'saveCart',
+				proId : proId
+			},
+			dataType : 'json',
+			success : function(data) {
+				
+			}
+		})
+	}
 </script>
 </head>
 <body>
@@ -94,7 +113,7 @@
 			<h1 id=pname></h1>
 			<div class="infos">
 				<div class="thumb">
-					<img name="pimg"/>
+					<img name="pimg" />
 				</div>
 				<div class="buy">
 					<p>
@@ -105,7 +124,8 @@
 					</p>
 					<div class="button">
 						<input type="button" name="button" value="" onclick="goBuy(1)" /><a
-							href="#">放入购物车</a>
+							href="javascript:cart()">放入购物车</a> <input
+							hidden="hidden"  name="proId"/>
 					</div>
 				</div>
 				<div class="clear"></div>
